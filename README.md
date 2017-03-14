@@ -5,8 +5,14 @@ The watermark service is a demo REST API application that simulates an asynchron
 
 This is a non-comprehensive list of the features of the app:
 
-+ Technologies Used: Spring Boot, Spring Web, Spring Data, JPA, Maven, H2 DB (as in-memory database), JUnit, Mockito, and other technologies.
-+ Simulation: There is no real service that watermarks the documents, yet it's simulated by a separate thread that changes watermark status in database after a configurable delay, thus helping testing different states of document.
+
++ **Containerless Application:** The application is fully runnable from command line, it will start its embedded application server and database, hence it doesn't need any prior installations or configuration.
++ **Automated Tests:** Both Unit and Integration Tests are available, and part of the build process.
++ **One Line Builds and Deployments:** Application can be built, verified, and deployed using single line commands, making it easy to start and integrate with Contineous Integration tools such as Jenkins.
++ **REST API:** Implementation adheres to REST API design principles and best practices, presenting everything as a resource, that can be accessed with HTTP methods and parametrized URLs, getting relevant response content and HTTP status codes.
++ **Simulation:** There is no real service that watermarks the documents, yet it's simulated by a separate thread that changes watermark status in database after a configurable delay, thus helping testing different states of document.
++ **Asynchronous:** As the application simulates a time expensive operation, it's designed in an asynchronous way so that clients don't have to keep the connection open for too long, and server can handle many requests in a scalable way.
++ **Technologies Used:** Application showcases several technologies; Spring Boot, Spring Web, Spring Data, JPA, Maven, H2 DB (as in-memory database), JUnit, Mockito, and other technologies.
 
 ## Importing, Building, and Running the Application
 ### Importing the application into an IDE:
@@ -49,7 +55,7 @@ _Note:_ Console is not exposed if you run the application using the `java -jar` 
 
 This is the documentation of various methods offered by the REST API, how it can be called, and what to expect from it:
 
-### Title
+### Create Watermark
 
 Uploads the given file to database and start the watermarking process.
 
@@ -60,46 +66,113 @@ Uploads the given file to database and start the watermarking process.
 * **Method:**
   
    `POST`
-  
-*  **URL Params**
 
-   None
-
-* **Data Params**
+* **Query/Body Params**
 
    **Required:**
  
    `file=[binary]` the file to be uploaded
    `author=[String]`
+   `title=[String]`
+   `content=[String, enumerated]` Must be one of: BOOK, Journal
 
    **Optional:**
  
-   `topic=[String]`
+   `topic=[String, enumerated]` Must be one of: MEDIA, BUSINESS, SCIENCE
 
 * **Success Response:**
-  
-  <_What should the status code be on success and is there any returned data? This is useful when people need to to know what their callbacks should expect!_>
 
-  * **Code:** 200 <br />
-    **Content:** `{ id : 12 }`
+  * **Code:** 202 ACCEPTED <br />
+    **Content:** `id` id of the accepted document, to be used later in querying watermarking status and retrieve the document.
  
 * **Error Response:**
 
-  <_Most endpoints will have many ways they can fail. From unauthorized access, to wrongful parameters etc. All of those should be liste d here. It might seem repetitive, but it helps prevent assumptions from being made where they should be._>
-
-  * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
+  * **Code:** 400 BAD REQUEST <br />
+    **Reason:** A required parameter is missing. <br />
+    **Content:** JSON object containing details about the error, including which parameter was missing from request.
 
   OR
 
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }`
+  * **Code:** 422 UNPROCESSABLE ENTITY <br />
+    **Reason:** An enumerated parameter had value that doesn't match allowed enumeration values. <br />
+    **Content:** Error message indicating which parameter was faulty, and allowable values for it.
 
-* **Sample Call:**
+### Check Watermark creation status
 
-  <_Just a sample call to your endpoint in a runnable format ($.ajax call or a curl request) - this makes life easier and more predictable._> 
+Checks if for a given document the watermark is ready or not
 
-* **Notes:**
+* **URL**
 
-  <_This is where all uncertainties, commentary, discussion etc. can go. I recommend timestamping and identifying oneself when leaving comments here._> 
+/watermarks/{id}
+
+* **Method:**
+  
+   `HEAD`
+  
+*  **URL Params**
+
+   **Required:**
+ 
+   `id=[integer]` id of the document to be retrieved
+
+* **Success Response:**
+
+  * **Code:** 201 CREATED , indicates that watermark has been added to document and it can now be retrieved <br /> 
+ 
+* **Error Response:**
+
+  * **Code:** 409 CONFLICT <br />
+    **Reason:** Document is found but watermark is not created yet, resource should be polled later to check status. <br />
+    
+  OR
+
+  * **Code:** 404 NOT FOUND <br />
+    **Reason:** Document was not found, invalid ID was given. <br />
+    **Content:** JSON object containing details about the error, including which parameter was missing from request.
+
+  OR
+
+  * **Code:** 422 UNPROCESSABLE ENTITY <br />
+    **Reason:** An enumerated parameter had value that doesn't match allowed enumeration values. <br />
+    **Content:** Error message indicating which parameter was faulty, and allowable values for it.
+
+### Get Watermarked Document
+
+Retrieves the watermarked document
+
+* **URL**
+
+/watermarks/{id}
+
+* **Method:**
+  
+   `GET`
+  
+*  **URL Params**
+
+   **Required:**
+ 
+   `id=[integer]` id of the document to be retrieved
+
+* **Success Response:**
+
+  * **Code:** 200 OK  <br /> 
+    **Content:** JSON messge that includes the document and the watermark associated with it.
+    
+* **Error Response:**
+
+  * **Code:** 409 CONFLICT <br />
+    **Reason:** Document is found but watermark is not created yet, resource should be polled later to check status. <br />
+    
+  OR
+
+  * **Code:** 404 NOT FOUND <br />
+    **Reason:** Document was not found, invalid ID was given. <br />
+    **Content:** JSON object containing details about the error, including which parameter was missing from request.
+
+  OR
+
+  * **Code:** 422 UNPROCESSABLE ENTITY <br />
+    **Reason:** An enumerated parameter had value that doesn't match allowed enumeration values. <br />
+    **Content:** Error message indicating which parameter was faulty, and allowable values for it.
 
