@@ -9,7 +9,7 @@ This is a non-comprehensive list of the features of the app:
 
 
 + **Containerless Application:** The application is fully runnable from command line, it will start its embedded application server and database, hence it doesn't need any prior installations or configuration.
-+ **Automated Tests:** Both Unit and Integration Tests are available, and part of the build process.
++ **Automated Tests:** Both Unit and Integration Tests are available, can be run separately, and part of the build process.
 + **One Line Builds and Deployments:** Application can be built, verified, and deployed using single line commands, making it easy to start and integrate with Contineous Integration tools such as Jenkins.
 + **REST API:** Implementation adheres to REST API design principles and best practices, presenting everything as a resource, that can be accessed with HTTP methods and parametrized URLs, getting relevant response content and HTTP status codes.
 + **Simulation:** There is no real service that watermarks the documents, yet it's simulated by a separate thread that changes watermark status in database after a configurable delay, thus helping testing different states of document.
@@ -57,6 +57,15 @@ username: sa
 
 _Note:_ Console is not exposed if you run the application using the `java -jar` command.
 
+#### Automated Testing
+
+##### Unit Tests
+
+Unit Tests can be run separately using `mvn test` command.
+
+##### Integration Tests
+
+Integration Tests can be run using `mvn verify` command.
 
 ----
 
