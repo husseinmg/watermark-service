@@ -46,7 +46,9 @@ Calling the service is described in the API Documentation section, but basically
 The H2 in-memory database has an exposed console (only in development environment), that can be accessed when the application is up and running, through this URL and connection data:
 
 URL: http://localhost:8080/h2-console/login.jsp
+
 JDBC URL: jdbc:h2:mem:springernature
+
 username: sa
 
 _Note:_ Console is not exposed if you run the application using the `java -jar` command.
@@ -71,9 +73,9 @@ Uploads the given file to database and start the watermarking process.
 
    **Required:**
  
-   `file=[binary]` the file to be uploaded
-   `author=[String]`
-   `title=[String]`
+   `file=[binary]` the file to be uploaded <br />
+   `author=[String]` <br />
+   `title=[String]` <br />
    `content=[String, enumerated]` Must be one of: BOOK, Journal
 
    **Optional:**
@@ -175,4 +177,24 @@ Retrieves the watermarked document
   * **Code:** 422 UNPROCESSABLE ENTITY <br />
     **Reason:** An enumerated parameter had value that doesn't match allowed enumeration values. <br />
     **Content:** Error message indicating which parameter was faulty, and allowable values for it.
+
+## Technical Implementation
+
+### Object Models
+
+#### Resources Model
+Resides in `com.springernature.watermark.api.resources`, it represents the Resources offered by the REST API, for easy marshalling and unmarshalling to JSON or other formats, as it's geared toward presenting a response the structure here is as follows: `Document` is the main entity, it has a `Watermark` object by composition, which can be subclassed to present different kinds of watermarks, here they are `BookWatermark` and `JournalWatermark`.
+
+#### Domain Model
+Resides in `com.springernature.watermark.model`, it's the Domain Model of the application, so it maps to the business concepts, for example `Document` is an _abstract class_ (as it's just a concept), its concrete implementations `Book` and `Journal` offer the instantiatable specialzations that are used in the application
+
+Enumerations `Topic` and `DocumentType` also are offered to limit the range of values as stated in business requirements.
+
+#### Persistence 
+Persistence is oferred by the Spring Data CrudRepository implementation `DocumentRepository`, and also by the Domain Model itself, the approach is similar to the Active Record pattern, so it encapsulates part of its persistence code, helping it to better encapsulate its code and reduce dependency on other classes.
+
+#### Exception Handling
+Part of the exception handling is done using Advices, like the `ExceptionTranslator` class, separating the concern of exception handling from main code.
+
+
 
