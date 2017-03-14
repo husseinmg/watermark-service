@@ -1,6 +1,8 @@
 # watermark-service
 The watermark service is a demo REST API application that simulates an asynchronous service used to watermark electronic publications (such as books, and journals).
 
+---
+
 ## Features
 
 This is a non-comprehensive list of the features of the app:
@@ -13,6 +15,8 @@ This is a non-comprehensive list of the features of the app:
 + **Simulation:** There is no real service that watermarks the documents, yet it's simulated by a separate thread that changes watermark status in database after a configurable delay, thus helping testing different states of document.
 + **Asynchronous:** As the application simulates a time expensive operation, it's designed in an asynchronous way so that clients don't have to keep the connection open for too long, and server can handle many requests in a scalable way.
 + **Technologies Used:** Application showcases several technologies; Spring Boot, Spring Web, Spring Data, JPA, Maven, H2 DB (as in-memory database), JUnit, Mockito, and other technologies.
+
+---
 
 ## Importing, Building, and Running the Application
 ### Importing the application into an IDE:
@@ -52,6 +56,9 @@ JDBC URL: jdbc:h2:mem:springernature
 username: sa
 
 _Note:_ Console is not exposed if you run the application using the `java -jar` command.
+
+
+----
 
 ## REST API Documentation
 
@@ -177,6 +184,9 @@ Retrieves the watermarked document
   * **Code:** 422 UNPROCESSABLE ENTITY <br />
     **Reason:** An enumerated parameter had value that doesn't match allowed enumeration values. <br />
     **Content:** Error message indicating which parameter was faulty, and allowable values for it.
+
+
+---
 
 ## Technical Implementation
 
