@@ -26,9 +26,9 @@ public class WatermarkProcessor {
 
         LOG.info("document saved");
 
-        //TODO handle error cases in this extensive work?
         //Simulate time expensive watermarking work
-        new Thread(((Runnable) () -> waterMarkDocument(doc.getId()))).start();
+        simulateWatermarkProcessing(doc.getId());
+
 
 
         return id;
@@ -46,21 +46,31 @@ public class WatermarkProcessor {
         return document;
     }
 
-    private void waterMarkDocument(Long id){
-        try {
+    private void simulateWatermarkProcessing(Long id){
             LOG.info("Simulating Watermark processing with secondsToWait = "+secondsToWait);
 
-            Thread.sleep(secondsToWait * 1000);
-
-            Document doc = documentRepository.findOne(id);
-            if(doc != null) {
-                doc.setWatermarked(true);
-                documentRepository.save(doc);
-                LOG.info("Watermark created and updated in database.");
+            if(secondsToWait > 0) {
+                new Thread(((Runnable) () -> {
+                    try {
+                        Thread.sleep(secondsToWait * 1000);
+                        Document doc = documentRepository.findOne(id);
+                        if (doc != null) {
+                            doc.setWatermarked(true);
+                            documentRepository.save(doc);
+                            LOG.info("Watermark created and updated in database.");
+                        }
+                    } catch (InterruptedException e) {
+                        LOG.error(e);
+                    }
+                })).start();
+            }else {
+                Document doc = documentRepository.findOne(id);
+                if (doc != null) {
+                    doc.setWatermarked(true);
+                    documentRepository.save(doc);
+                    LOG.info("Watermark created and updated in database.");
+                }
             }
-        } catch (InterruptedException e) {
-            LOG.error(e);
-        }
     }
 
 }

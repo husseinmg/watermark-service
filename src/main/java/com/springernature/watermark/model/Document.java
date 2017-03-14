@@ -3,9 +3,7 @@ package com.springernature.watermark.model;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by Hussein on 10/03/2017.
- */
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "CONTENT")

@@ -4,11 +4,13 @@ import java.net.URI;
 import java.util.Map;
 
 import com.springernature.watermark.Application;
+import com.springernature.watermark.IntegrationTest;
 import com.springernature.watermark.model.Book;
 import com.springernature.watermark.model.ModelTestUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
@@ -29,6 +31,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {"management.port=0"})
+@Category(IntegrationTest.class)
 public class WatermarkApiIntegrationTest {
 
     private static Log LOG = LogFactory.getLog(WatermarkApi.class);
@@ -103,7 +106,6 @@ public class WatermarkApiIntegrationTest {
         LOG.info("Testing successfulHead");
         Book book = ModelTestUtil.createDummyBook();
         Long id = postRequest(book);
-        Thread.yield();
 
         RequestEntity entity = RequestEntity.head(new URI(baseUrl+"/"+id)).build();
         ResponseEntity<Map> response = this.testRestTemplate.exchange(entity, Map.class);
@@ -116,7 +118,6 @@ public class WatermarkApiIntegrationTest {
         LOG.info("Testing successfulGet");
         Book book = ModelTestUtil.createDummyBook();
         Long id = postRequest(book);
-        Thread.yield();
 
         RequestEntity entity = RequestEntity.get(new URI(baseUrl+"/"+id)).build();
         ResponseEntity<Map> response = this.testRestTemplate.exchange(entity, Map.class);
