@@ -14,6 +14,11 @@ public abstract class Watermark {
         this.content = in.getContent();
     }
 
+    /**
+     * Factory method to create the proper implementation of Watermark
+     * @param in
+     * @return
+     */
     public static Watermark create(Document in){
         if(in instanceof Book){
             return new BookWatermark(in);

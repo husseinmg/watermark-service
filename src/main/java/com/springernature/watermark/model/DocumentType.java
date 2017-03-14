@@ -1,5 +1,8 @@
 package com.springernature.watermark.model;
 
+/**
+ * Allowable document types
+ */
 public enum DocumentType {
     BOOK('B'),
     JOURNAL('J');

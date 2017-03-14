@@ -3,7 +3,9 @@ package com.springernature.watermark.model;
 import javax.persistence.*;
 import java.util.Date;
 
-
+/**
+ * Parent class in the Domain/Persistence Model, represents the concept of a Document.
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "CONTENT")
@@ -34,6 +36,15 @@ public abstract class Document {
 
     public Document(){}
 
+    /**
+     * Factory method to create the proper implementation of Document's subclasses
+     * @param file
+     * @param title
+     * @param author
+     * @param content
+     * @param topic
+     * @return
+     */
     public static Document create(byte[] file, String title, String author, DocumentType content, Topic topic){
         Document doc = null;
         if(content == DocumentType.BOOK){

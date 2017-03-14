@@ -5,6 +5,9 @@ import com.springernature.watermark.model.DocumentType;
 import com.springernature.watermark.model.Journal;
 import com.springernature.watermark.model.Topic;
 
+/**
+ * Enclosing class for all Resource classes, that will be transformed to JSON in response to client request.
+ */
 public class Document {
     private Long id;
     private byte[] file;

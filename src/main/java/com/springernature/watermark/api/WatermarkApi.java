@@ -1,6 +1,7 @@
 package com.springernature.watermark.api;
 
 import com.springernature.watermark.api.resources.*;
+import com.springernature.watermark.api.resources.generic.Info;
 import com.springernature.watermark.business.WatermarkProcessor;
 import com.springernature.watermark.data.DocumentRepository;
 import com.springernature.watermark.model.*;
@@ -13,12 +14,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Size;
 import javax.websocket.server.PathParam;
 import java.io.IOException;
 
+/**
+ * Main class offering the REST API for watermarking service.
+ */
 @RestController
 @RequestMapping(value = "watermarks")
 public class WatermarkApi {
@@ -47,8 +53,16 @@ public class WatermarkApi {
                             @RequestParam(value = "topic", required = false) Topic topic,
                             @RequestParam("content") DocumentType content,
                             @RequestParam("author") String author) {
+
+        if(StringUtils.isEmpty(title) || StringUtils.isEmpty(author)){
+            throw new IllegalArgumentException("String query parameters cannot be empty or blank");
+        }
+
         Long id = null;
         try {
+            if(file == null || file.getBytes() == null || file.getBytes().length == 0){
+                throw new IllegalArgumentException("document file cannot be empty");
+            }
             //copy values into model
             Document document = Document.create(file.getBytes(), title, author, content, topic);
 
@@ -80,9 +94,9 @@ public class WatermarkApi {
         //check if watermarked already done for given document
         Boolean isWatermarked = watermarkProcessor.checkWatermarkStatus(documentId);
         if(isWatermarked == null){
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error("No document was found for the given document ID"));
         }else if (!isWatermarked){
-            response = ResponseEntity.status(HttpStatus.CONFLICT).build();
+            response = ResponseEntity.status(HttpStatus.CONFLICT).body(new Info("Watermark is not ready yet for the given document ID"));
         }else{
             response = ResponseEntity.status(HttpStatus.CREATED).build();
         }
@@ -106,9 +120,9 @@ public class WatermarkApi {
 
         Document document = watermarkProcessor.getDocument(documentId);
         if(document == null){
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error("No document was found for the given document ID"));
         }else if (!document.isWatermarked()){
-            response = ResponseEntity.status(HttpStatus.CONFLICT).body("Watermark is not ready yet for this document.");
+            response = ResponseEntity.status(HttpStatus.CONFLICT).body(new Info("Watermark is not ready yet for the given document"));
         }else{
             response = ResponseEntity.status(HttpStatus.OK).body(new com.springernature.watermark.api.resources.Document(document));
         }

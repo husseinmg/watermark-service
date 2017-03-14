@@ -4,7 +4,7 @@ import com.springernature.watermark.model.*;
 import com.springernature.watermark.model.Document;
 
 /**
- * Created by Hussein on 10/03/2017.
+ * Concrete implementation for Book Watermarks
  */
 public class BookWatermark extends Watermark{
     private Topic topic;
